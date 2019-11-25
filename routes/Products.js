@@ -1,9 +1,20 @@
 const router = require("express").Router();
-let Products = require("../Models/products.model");
+let Products = require("../Models/Products.model");
+
 router.get("/", (req, res) => {
-  Products.find({}, (err, data) => {
-    if (err) return res.status(400).send(err);
-    res.status(200).json(data);
-  });
+  Products.find({})
+  .then(data =>res.json(data))
+  .catch(err => res.send(err))
 });
+
+// router.get('/', async(req,res) => {
+//   try{
+//       const product = await Products.find()
+//       // const product = await Product.find({}).exec();
+//       return res.send(product)
+//   } catch (err) {
+//       console.log(err);
+//     } 
+//   });
+
 module.exports = router;

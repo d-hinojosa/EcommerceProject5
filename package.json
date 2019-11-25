@@ -35,10 +35,5 @@
         "chai": "^4.2.0",
         "chai-http": "^2.0.1",
         "mocha": "^2.4.5"
-    },
-    "proxy": {
-        "/products": {
-            "target": "http://127.0.0.1:5000"
-        }
     }
 }

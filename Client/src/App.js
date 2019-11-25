@@ -24,7 +24,7 @@
 // export default App;
 import React from "react";
 import Navbar from "./Components/Navbar/Navbar";
-import routes from "../../routes/";
+// import routes from "../../routes/";
 import {
   BrowserRouter as Router,
   Route,
@@ -37,10 +37,10 @@ import httpClient from "./httpClient";
 import Home from "./Components/Home/index";
 import Products from "./Components/Products/index";
 import Contact from "./Components/Contact/index";
-import LogIn from "./Views/Login";
-import LogOut from "./Views/Logout";
-import SignUp from "./Views/Signup";
-import RTH from "./Views/Rth";
+import LogIn from "./Views/LogIn";
+import LogOut from "./Views/LogOut";
+import SignUp from "./Views/SignUp";
+import RTH from "./Views/RTH";
 import Footer from "./Components/Footer/Footer";
 
 class App extends React.Component {

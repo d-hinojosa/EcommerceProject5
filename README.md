@@ -1,68 +1,82 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# React Application with JWT Authentication
 
-## Available Scripts
+### Overview
 
-In the project directory, you can run:
+This is an example application that serves an ExpressJS JSON api to a React client application. The React application is configured for a basic JWT authentication flow **WITHOUT** using redux. Great for those of you that are somewhat familiar with Node, Express, and Mongoose, but want to see an implementation of React + React Router with JWT authentication.
 
-### `npm start`
+The React client app could easily be restructured to keep current user information in a Redux Store. Give it a shot!
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Installation + Development
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+1. `git clone` this repository to your local machine.
 
-### `npm test`
+2. run `npm install` from the cloned repo directory.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. create a `.env` file at the root of the application, adjacent to `server.js`.
 
-### `npm run build`
+   *The only environment variable you **have** to declare in development is `JWT_SECRET`*
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   In the `.env` file, you can declare the following environment variables: `JWT_SECRET`, `MONGODB_URI`, and `PORT`. For example:
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+   ```
+   JWT_SECRET=BOOOOOOOOOOOOOM
+   MONGODB_URI=mongodb://localhost/react-express-jwt
+   PORT=3001
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+4. It's recommended that you run the api server on port 3001 while developing locally, as the client app will default to port 3000.
+5. Make sure `mongod` is running by running… ahem… `mongod`
+6. From that point you can run the api server either by using `nodemon` or just running `node server.js`
+7. Now for the client application. `cd client`
+8. Install the client app's dependencies with `npm install`
+9. From the client directory, run `npm start` to boot up the client application.
+10. $$$ Profit
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Usage
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+It's common to identify the user making an authenticated request on the server side. In this application, the `verifyToken` middleware (declared in `/serverAuth.js`) decodes a provided token, and makes sure the request is coming from a valid user. When the user is validated, it is added to the `req` object as `req.user`. 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Here's an example of how you can access the 'current user' from the server side app, assuming a user is logged in and sending an authenticated request:
 
-## Learn More
+```javascript
+const express = require('express')
+const mySpecialRouter = new express.Router()
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+// JWT AUTH MIDDLEWARE:
+const { verifyToken }  = require('../serverAuth.js')
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+const Comment = require('../models/Comment.js')
 
-### Code Splitting
+// all routes declared after this middleware require a token
+mySpecialRouter.use(verifyToken)
+mySpecialRouter.post("/comments", (req, res) => {
+  // since this route succeeds 'verifyToken', it has the current user in req.user
+  // so we can easily associate new mongo documents to the current user:
+  Comment.create({ ...req.body, user: req.user }, (err, comment) => {
+    if(err) return console.log(err)
+    res.json({ success: true, message: "Comment created.", comment })
+  })
+})
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+module.exports = mySpecialRouter
+```
 
-### Analyzing the Bundle Size
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
 
-### Making a Progressive Web App
+### Technologies
+- React client application
+- NodeJS + Express + Mongoose 
+- React Router 4.*
+- Milligram CSS 
+- JSON Web Token authentication flow
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+### Important Notes
 
-### Advanced Configuration
+- While the Mongoose user schema enforces email uniqueness, there's no handler for duplicate user emails on the client side. (A user wouldn't know why they couldn't create their account if they came across this scenario).
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+## Author
+* [Biridiana Hinojosa](https://github.com/d-hinojosa)
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details

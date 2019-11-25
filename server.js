@@ -62,8 +62,9 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const usersRoutes = require("./routes");
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 mongoose.set("useCreateIndex", true);
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
   uri = process.env.ATLAS_URI; // connection string for Atlas here
@@ -84,6 +85,9 @@ app.use(express.static(`${__dirname}/client/build`));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const productRouter = require('./routes/Products')
+app.use('/products', productRouter)
 app.get("/api", (req, res) => {
   res.json({ message: "API root" });
 });
